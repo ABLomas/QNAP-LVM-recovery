@@ -81,7 +81,7 @@ So, you got your data in single file, this is good thing, but if you try to use 
   - attach additional storage - you will need to copy data out
   - adjust serial port settings (see serial settings - QNAP has no monitor output, we use serial link - in image it is set as `\\.\pipe\com15` - i maybe also used tool named "COMpipe.exe" - it's free on internet)
 - Start VM. You won't see anything if you use "Connect" (no video out) but you can connect to serial port (by default COM15) using putty or any other tool you like.
-- run `/etc/init.d/init_check.sh`, lsblk, check that all attached devices visible. Mount additional space if required
+- Log in using `admin/admin` username/password, run `/etc/init.d/init_check.sh`, lsblk, check that all attached devices visible. Mount additional space if required
 - Go with recovery, in my case:
 
 
