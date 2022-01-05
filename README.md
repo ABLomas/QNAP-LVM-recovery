@@ -1,18 +1,18 @@
 ## Why this tool?
 QNAP storage has "thin-volume" LVM feature, which is not working properly and can lead to metadata (and data, in some cases) corruption (most likely - when volumes are full and system is doing automated snapshots). It is not merged into mainline kernel.
 
-This repo/image can help you to recover data from corrupted thin LVM volume. Well, at least it worked in two cases i had, maybe it will work for you. It allows to repair and access thin-and-thick provisioned LVM volumes (QNAP edition).
+This VM image can help you to recover data from corrupted thin LVM volume. Well, at least it worked in two cases i had, maybe it will work for you. It allows to repair and access thin (and thick) provisioned LVM volumes (QNAP edition).
 
 ## Why separate VM image?
-QNAP sources (modified GPL stuff) were released, kind of, but when i was trying to build kernel - i had so many missing references, undefined macros (linked into some non-existing includes), etc - in other words, kernel does not build. Modified LVM binaries work, but without kernel support they are useless. I did this VM year ago so do not remember all steps i did, but in short - i extracted old QNAP recovery image (old for some reason - probably changed kernel compression), applied patches, swapped LVM binaries from new qnap release and installed few binaries. Something like that. 
+QNAP sources (modified GPL stuff) were released, kind of, but when i was trying to build kernel - i had so many missing references, undefined macros (linked into some non-existing includes), etc - in other words, kernel does not build. Modified LVM binaries work, but without kernel support they are useless. I did this VM long ago so do not remember all steps i did, but in short - i extracted old QNAP recovery image (old for some serious reason - probably changed kernel compression), applied patches, swapped LVM binaries from new qnap release and installed few binaries. Also used hints from https://github.com/mkke/qnap-recovery - something like that. 
 
 I did not found any commercial tool capable of fixing (!) corrupted thin LVM. Even when some claim that they should be able to read data - they could do that from "clean" LVM volume (which may be useful if you had partial disk failure, recovered with corrupted data on disk, QNAP storage refuses to use full volume, but metadata is intact), but any corruption - and all tools become useless (well, sure they can do full data scan, looking for file patterns, but this is not what i want).
 
 ## Steps to recover data
 (at least i would do this way, many things may differ depending on situation. I also did that long time ago, so do not remember all details):
-- Take out disks from QNAP storage. This MAY be not required if you are sure that array is in good shape (see step 2, 3). Usually it's better to work with data copy, even in read-only mode
+- Take out disks from QNAP storage. This MAY be not required if you are sure that array is in good shape (see steps below). Usually it's better to work with data copy, even in read-only mode
 - Attach them to linux system (have kpartx, lvm2, mdadm packages ready), make disk images (again, optional - i would not work with original client data - maybe your data is not worth it) using dd/ddrescue
-- Detach original disks (they are your master copy now, keep them in safe place). Setup RAID images (maybe not required if you have single disk, are there such devices with thin provisioning and no RAID? I don't know any):
+- Detach original disks (they are your master copy now, keep them in safe place). Setup RAID images (maybe not required if you have single disk, there are such devices with thin provisioning and no RAID? I don't know any):
 
        kpartx -a -v /fimg/m2_1.iso
        kpartx -a -v /fimg/m2_2.iso
@@ -109,6 +109,6 @@ So, you got your data in single file, this is good thing, but if you try to use 
   
 ## What to expect:
 In both cases i had - some data was lost, this is expected, but data loss was not huge. First one this was 0.08%, second case was a bit worse with ~0.34% of data lost. This is also counting stuff from lost+found (after fsck) - so some files lost their names (without it dataloss can be counted at approx 0.11% and 0.45% of data).
-This looks not bad, but when you have terabytes of data - maybe can hurt, so pre-fsck image could be used to pull even more data (`icat`, data read from unclean (before fixing!) filesystem, manually cutting overlapping data areas, etc) - but in my case clients did not noticed any important data loss (lost temporary files, few email attachments which can be recovered) and decided not to dive deeper.
+This looks not bad, but when you have terabytes of data - can hurt, so pre-fsck image could be used to pull even more data (`icat`, data read from unclean (before fixing!) filesystem, manually cutting overlapping data areas, etc) - but in my case clients did not noticed any important data loss (lost temporary files, few email attachments which can be recovered) and i decided not to dive deeper.
 
-For file checking scripts (in lost+found) see MongoDB recovery repo, but in short - this is simple script looping trough files, using magic bytes (to rename file) and then file-specific content checker (to verify file integrity)
+For file checking scripts (in lost+found) see MongoDB recovery repo, but in short - this is simple script looping trough files, using magic bytes (to rename file) and then file-specific content checker (to verify file integrity). In most cases you won't need them.
