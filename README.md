@@ -10,9 +10,10 @@ I did not found any commercial tool capable of fixing (!) corrupted thin LVM. Ev
 
 ## Steps to recover data
 (at least i would do this way, many things may differ depending on situation. I also did that long time ago, so do not remember all details):
-1.  Take out disks from QNAP storage. This MAY be not required if you are sure that array is in good shape (see step 2, 3). Usually it's better to work with data copy, even in read-only mode
-2. Attach them to linux system (have kpartx, lvm2, mdadm packages ready), make disk images (again, optional - i would not work with original client data - maybe your data is not worth it) using dd/ddrescue
-3. Detach original disks (they are your master copy now, keep them in safe place). Setup RAID images (maybe not required if you have single disk, are there such devices with thin provisioning and no RAID? I don't know any):
+- Take out disks from QNAP storage. This MAY be not required if you are sure that array is in good shape (see step 2, 3). Usually it's better to work with data copy, even in read-only mode
+- Attach them to linux system (have kpartx, lvm2, mdadm packages ready), make disk images (again, optional - i would not work with original client data - maybe your data is not worth it) using dd/ddrescue
+- Detach original disks (they are your master copy now, keep them in safe place). Setup RAID images (maybe not required if you have single disk, are there such devices with thin provisioning and no RAID? I don't know any):
+
        kpartx -a -v /fimg/m2_1.iso
        kpartx -a -v /fimg/m2_2.iso
        kpartx -a -v /fimg/sata_1.iso
@@ -26,8 +27,9 @@ I did not found any commercial tool capable of fixing (!) corrupted thin LVM. Ev
        # check with `fdisk -l /dev/mapper/loop1` for example and notice which partition is biggest
        # or see header/disk name in `hexdump -C /dev/mapper/loop5p3 | head`
        # or just use mdadm: `mdadm --examine /dev/mapper/loop[12345]p3`
-4. inspect previous command output and RAID health (`cat /proc/mdstat`), fix issues if there are any
-5. Again, optional, depends on data cost/data amount - make full data image: `ddrescue /dev/md126 /lots_of_space/raid_content.iso` (name md126 may differ)
+       
+- inspect previous command output and RAID health (`cat /proc/mdstat`), fix issues if there are any
+- Again, optional, depends on data cost/data amount - make full data image: `ddrescue /dev/md126 /lots_of_space/raid_content.iso` (name md126 may differ)
 So, you got your data in single file, this is good thing, but if you try to use it on typical linux system, for example using `lvscan` - you will probably get output:
     
         WARNING: Unrecognised segment type tier-thin-pool
@@ -74,7 +76,7 @@ So, you got your data in single file, this is good thing, but if you try to use 
           
  So, kernel module cannot understand metadata. Here we need modified image.
   
-- (should be 6.) Install Hyper-V (it is probably in W10 installations already? If not, you can add it using "add-remove windows components"), start mmc, add Hyper-V snapin, import unpacked image from "Releases" tab, go to settings. Add disks and change settings as required:
+- Install Hyper-V (it is probably in W10 installations already? If not, you can add it using "add-remove windows components"), start mmc, add Hyper-V snapin, import unpacked image from "Releases" tab, go to settings. Add disks and change settings as required:
   - attach RAID image from steps above (storage with iso file - we need raw content)
   - attach additional storage - you will need to copy data out
   - adjust serial port settings (see serial settings - QNAP has no monitor output, we use serial link - in image it is set as `\\.\pipe\com15` - i maybe also used tool named "COMpipe.exe" - it's free on internet)
