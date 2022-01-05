@@ -87,13 +87,11 @@ So, you got your data in single file, this is good thing, but if you try to use 
 
       # /etc/init.d/init_check.sh
       mkdir /1
-      mkdir /2
-      mkdir /3
       mount -t ext4 /dev/sdb2 /1
-      # in /1 we have RAID data
+      # now in /1 we have RAID data
       losetup /dev/loop0 /1/raid_content.iso
       ln -s /dev/loop0 /dev/md1
-      # I do not remember details but IIRC QNAP tools refused to work with loop images
+      # I do not remember details - why - but IIRC QNAP tools refused to work with loop images, but symlink to "md" device was ok
       pvscan --cache /dev/md1
       pvs
       lvchange -a y vg1/lv1 
