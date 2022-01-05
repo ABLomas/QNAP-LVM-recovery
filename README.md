@@ -82,6 +82,7 @@ So, you got your data in single file, this is good thing, but if you try to use 
   - adjust serial port settings (see serial settings - QNAP has no monitor output, we use serial link - in image it is set as `\\.\pipe\com15` - i maybe also used tool named "COMpipe.exe" - it's free on internet)
 - Start VM. You won't see anything if you use "Connect" (no video out) but you can connect to serial port (by default COM15) using putty or any other tool you like.
 - Log in using `admin/admin` username/password, run `/etc/init.d/init_check.sh`, lsblk, check that all attached devices visible. Mount additional space if required
+- I do not remember all details, but most likely i extended ISO image (dd few hundred megabytes from /dev/zero, merge it (to end) with raid image (using cat, for example), extend PV inside - or any other operation you know). Skip this step for a while, try with steps below, but most likely it will fail due to missing disk space, so you will need to extend it.
 - Go with recovery, in my case:
 
 
